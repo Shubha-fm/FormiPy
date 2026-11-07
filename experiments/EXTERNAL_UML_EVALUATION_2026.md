@@ -59,3 +59,19 @@ The downloaded public Zenodo ZIP had SHA256:
 ### Suggested SoftwareX manuscript paragraph
 
 We conducted an additional evaluation using the independently curated Golden UML ModelSet (Verbruggen et al., 2025; DOI: 10.5281/zenodo.16985873). The 45 externally sourced class-diagram models were adapted into FormiPy's input schema using a conservative parser for named classes and binary relationships. The adapter mapped 458 recognized class declarations and 373 of 475 candidate relationship lines (78.5%). All 45 adapted models completed structural conversion, and their exported Python smoke-test suites passed. The remaining 102 relationship candidates were unsupported or unresolved, and multiplicities, n-ary associations, and richer UML semantics were not preserved. These observations demonstrate compatibility with adapted external inputs rather than full UML fidelity, formal verification of class diagrams, or validation in deployed industrial systems.
+
+## Second external source: MoDeS3 railway research demonstrator
+
+We evaluated two externally authored Yakindu SCT models from the [MoDeS3 engineering demonstrator](https://github.com/ftsrg/BME-MODES3), pinned at upstream commit `46a494ed16a11984175022239f8a48beee4b6461`. The study is in [GitHub Actions run 42412269801](https://github.com/Shubha-fm/FormiPy/actions/runs/42412269801) and uses `scripts/run_external_modes3_2026.py`.
+
+| MoDeS3 model | Original vertices | Root states retained | Original outgoing transitions | Root-to-root transitions retained | Structural conversion | Exported pytest |
+|---|---:|---:|---:|---:|---|---|
+| Section | 9 | 5 | 24 | 16 | PASS | PASS |
+| Turnout | 21 | 2 | 25 | 2 | PASS | PASS |
+| **Total** | **30** | **7** | **49** | **18** | **2/2** | **2/2** |
+
+**Critical interpretation:** These inputs were simplified drastically. Yakindu guards, events, actions and nested/orthogonal region semantics were not preserved. The source Turnout statechart retained only two of 25 transitions in the adapted skeleton. The result is a reproducible **compatibility and expressiveness-gap experiment**, **not** a validated industrial railway case study. No TLC safety checking is claimed for these adapted cases.
+
+### Editorial recommendation
+
+Present the externally curated 45-model class study under “External-input compatibility evaluation”, with its mapping-loss statistics. Mention the MoDeS3 adaptation as a limitation/exploratory external engineering case, not as evidence of safety property preservation. Keep “independent industrial validation” as unfinished until a source model from an industrial organization has been independently checked for semantic fidelity and allowed to be described in the manuscript.

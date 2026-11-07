@@ -92,6 +92,15 @@ def test_allowed_request_then_completion():
     assert pair in instance.completed
     assert instance.check_safety() is True
 '''
+        # A supported, explicit executable permission contract: a pair marked
+        # forbidden must not occur in the generated implementation's allowed set.
+        # This checks a concrete permission relation, not temporal semantics.
+        if model.forbidden_requests:
+            forbidden = [(actors[p.source], cases[p.target])
+                         for p in model.forbidden_requests
+                         if p.source in actors and p.target in cases]
+            if forbidden:
+                body += f'''\n\ndef test_forbidden_permissions_are_not_granted():\n    instance = GeneratedModel()\n    forbidden = {forbidden!r}\n    for pair in forbidden:\n        assert pair not in instance.allowed, f"Forbidden permission granted: {pair!r}"\n'''
         return header + body
 
     if kind == "class":

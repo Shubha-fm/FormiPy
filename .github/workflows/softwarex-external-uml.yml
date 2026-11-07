@@ -1,4 +1,4 @@
-name: SoftwareX external GoldenUML inventory
+name: SoftwareX external curated UML benchmark
 on:
   workflow_dispatch:
   push:

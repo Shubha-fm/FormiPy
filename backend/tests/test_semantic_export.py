@@ -52,6 +52,9 @@ class SemanticExportTests(unittest.TestCase):
         for name in ("tlc_safe", "tlc_unsafe"):
             with self.subTest(name=name):
                 model = json.loads((ROOT / "examples" / (name + ".json")).read_text())
+                model["weak_fairness"] = False
+                model["response_condition"] = ""
+                model["response_target"] = ""
                 profile, files = self.inspect_export(model)
                 self.assertEqual(profile["status"], "bounded_finite_semantic_check_available")
                 self.assertIn("tests/test_semantic_preservation.py", files)
@@ -60,6 +63,9 @@ class SemanticExportTests(unittest.TestCase):
 
     def test_simple_mutation_is_detected(self):
         model = json.loads((ROOT / "examples/tlc_safe.json").read_text())
+        model["weak_fairness"] = False
+        model["response_condition"] = ""
+        model["response_target"] = ""
         _, files = self.inspect_export(model)
         code, output = self.run_exported(files, mutate=True)
         self.assertNotEqual(code, 0, output)

@@ -1,0 +1,63 @@
+name: SoftwareX reproducible same-commit full synthesis
+on:
+  workflow_dispatch:
+  push:
+    branches: [softwarex-statistical-synthesis-2026]
+    paths:
+      - scripts/summarize_softwarex_2026.py
+      - .github/workflows/softwarex-synthesis-2026.yml
+jobs:
+  rerun-and-synthesize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Python and TLC
+        run: |
+          python -m pip install -r backend/requirements-dev.txt
+          python backend/install_tlc.py
+      - name: Run phase 1, structural conversions and measured latency
+        env:
+          PYTHONPATH: backend
+          FORMIPY_RESULTS: results/softwarex_phase1
+        run: python scripts/run_softwarex_phase1_2026.py
+      - name: Run phase 2, canonical TLC versus current exported tests
+        env:
+          PYTHONPATH: backend
+          FORMIPY_PHASE2_RESULTS: results/softwarex_phase2
+        run: python scripts/run_softwarex_phase2_2026.py
+      - name: Run phase 3, purpose-built property-aligned checks
+        env:
+          PYTHONPATH: backend
+          FORMIPY_PHASE3_RESULTS: results/softwarex_phase3
+          FORMIPY_PHASE3_PAIRS_PER_FAMILY: '10'
+        run: python scripts/run_softwarex_phase3_2026.py
+      - name: Run phase 4, varied structures and current exported tests
+        env:
+          PYTHONPATH: backend
+          FORMIPY_PHASE4_RESULTS: results/softwarex_phase4
+        run: python scripts/run_softwarex_phase4_2026.py
+      - name: Run phase 5, built-in permission-contract tests
+        env:
+          PYTHONPATH: backend
+          FORMIPY_PHASE5_RESULTS: results/softwarex_phase5
+        run: python scripts/run_softwarex_phase5_2026.py
+      - name: Recompute report from raw per-case observations
+        env:
+          FORMIPY_STUDY_ROOT: results
+        run: python scripts/summarize_softwarex_2026.py
+      - name: Archive raw results, logs and synthesis even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-SoftwareX-2026-SameCommit-CompleteEvidence
+          path: results/
+          if-no-files-found: warn
+          retention-days: 90

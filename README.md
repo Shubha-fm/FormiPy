@@ -1,4 +1,12 @@
-# UML2TLA+ Five Diagram Converter
+# FormiPy: UML to TLA+ and Python
+
+**FormiPy** is a web-based UML modeling, TLA+ generation, Python prototype generation, and selective TLC verification tool. The existing public GitHub repository and Render URLs retain their historical `uml2tla-app` names to avoid broken links.
+
+**Live application:** https://uml2tla-app.onrender.com/  
+**Backend health:** https://uml2tla-app.onrender.com/api/health
+
+Note: Generating Python and passing pytest checks do not establish semantic equivalence with TLA+ or a verified implementation.
+
 
 This version supports conversion for all five UML diagram sections shown in the interface:
 
@@ -119,8 +127,8 @@ TLC verifies the finite boolean abstraction. It does not prove the UML mapping c
 ### Deployment with Java and TLC
 
 ```bash
-docker build -t uml2tla .
-docker run --rm -p 8000:8000 uml2tla
+docker build -t formipy .
+docker run --rm -p 8000:8000 formipy
 ```
 
 Open `http://localhost:8000`. For automated checks, install development dependencies and TLC, then run the regression command above. CI installs Java/TLC and runs the integration tests, including actual passing and violating models.

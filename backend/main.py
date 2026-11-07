@@ -15,7 +15,7 @@ from pytest_export import generate_pytest
 from analysis import analyze, validate_model, graph_tla
 from tlc import verify, available, build_spec
 
-app = FastAPI(title="UML2TLA+ Five Diagram Backend", version="5.0.0")
+app = FastAPI(title="FormiPy Backend", version="5.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,7 +32,7 @@ ASSETS_DIR = FRONTEND_DIST / "assets"
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "UML2TLA+ five diagram backend", "version": app.version, "analysis": "structural", "tlc_available": available(), "tlc_diagrams": ["state_machine", "use_case"]}
+    return {"status": "ok", "service": "FormiPy backend", "version": app.version, "analysis": "structural", "tlc_available": available(), "tlc_diagrams": ["state_machine", "use_case"]}
 
 
 @app.post("/api/convert", response_model=ConversionResponse)
@@ -85,7 +85,7 @@ def export_project(model: UMLModel):
             archive.writestr(behavior_module + ".tla", behavior)
             archive.writestr(behavior_module + ".cfg", behavior_cfg)
             archive.writestr("behavior_traceability.json", json.dumps(behavior_mapping, indent=2))
-        archive.writestr("README.txt", "UML2TLA+ project export\n\nRun: python -m pip install pytest; python -m pytest -q\nGenerated pytest checks exercise the Python prototype, not TLA+ equivalence.\n\nAnalysis is structural only. This export does not run TLC. Behavior files can be checked with TLC.\nRead analysis.json for warnings and scope.\nGraph modules ignore guard labels and concurrency.\nPython is a prototype, not proved equivalent to TLA+.\nOther diagram TLA+ outputs are draft skeletons.\n")
+        archive.writestr("README.txt", "FormiPy project export\n\nRun: python -m pip install pytest; python -m pytest -q\nGenerated pytest checks exercise the Python prototype, not TLA+ equivalence.\n\nAnalysis is structural only. This export does not run TLC. Behavior files can be checked with TLC.\nRead analysis.json for warnings and scope.\nGraph modules ignore guard labels and concurrency.\nPython is a prototype, not proved equivalent to TLA+.\nOther diagram TLA+ outputs are draft skeletons.\n")
     return Response(buffer.getvalue(), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{stem}_project.zip"'})
 
 
@@ -108,6 +108,6 @@ def serve_frontend(full_path: str):
 
     return {
         "status": "ok",
-        "service": "UML2TLA+ five diagram backend",
+        "service": "FormiPy backend",
         "message": "Frontend build not found. Run: cd frontend && npm install && npm run build",
     }

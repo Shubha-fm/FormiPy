@@ -1,7 +1,7 @@
 # FormiPy source directory
 
 This directory provides a **non-breaking source entry point** for the
-FormiPy/ UML2TLA+ web application.
+FormiPy web application.
 
 ## Source layout
 

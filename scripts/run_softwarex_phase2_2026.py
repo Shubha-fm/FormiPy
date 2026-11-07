@@ -43,7 +43,7 @@ for name, kind, expected in cases:
     (folder / "tlc_output.log").write_text(formal.get("tlc_output", ""))
     for key, suffix in (("tla", ".tla"), ("cfg", ".cfg")):
         if formal.get(key):
-            (folder / (formal.get("module_name") or name) + suffix).write_text(formal[key])
+            (folder / ((formal.get("module_name") or name) + suffix)).write_text(formal[key])
     verdict = formal.get("statistics", {}).get("result")
     if verdict != expected:
         raise AssertionError(f"{name}: expected {expected}, observed {verdict}")

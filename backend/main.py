@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from models import UMLModel, ConversionResponse
 from converter import generate_tla, generate_python
 from pytest_export import generate_pytest
+from semantic_export import generate_semantic_export, supported_semantic_profile
 from analysis import analyze, validate_model, graph_tla
 from tlc import verify, available, build_spec
 
@@ -76,6 +77,23 @@ def export_project(model: UMLModel):
         archive.writestr(stem + ".py", result.python_code)
         archive.writestr("tests/test_generated.py", generate_pytest(model, stem))
         archive.writestr("pytest.ini", "[pytest]\ntestpaths = tests\n")
+        semantic_reason = supported_semantic_profile(model)
+        if semantic_reason is None:
+            semantic_name, semantic_python, semantic_tests = generate_semantic_export(model, stem)
+            archive.writestr(semantic_name, semantic_python)
+            archive.writestr("tests/test_semantic_preservation.py", semantic_tests)
+            archive.writestr("semantic_profile.json", json.dumps({
+                "status": "bounded_finite_semantic_check_available",
+                "scope": "Flat finite Boolean state machines, explicit guards/updates, stuttering and safety",
+                "not_supported": ["General UML semantics", "hierarchical/concurrent state machines",
+                                  "weak fairness", "temporal response properties", "UML class/activity/sequence/use-case semantics"],
+                "check": "Exhaustive finite one-step reference-oracle comparison; not a proof of arbitrary generated Python equivalence"
+            }, indent=2))
+        else:
+            archive.writestr("semantic_profile.json", json.dumps({
+                "status": "not_supported", "reason": semantic_reason,
+                "notice": "The default generated Python prototype is not proved equivalent to the TLA+ model."
+            }, indent=2))
         archive.writestr("analysis.json", result.model_dump_json(indent=2))
         archive.writestr("traceability.json", json.dumps(result.traceability, indent=2))
         if result.cfg:
@@ -85,7 +103,7 @@ def export_project(model: UMLModel):
             archive.writestr(behavior_module + ".tla", behavior)
             archive.writestr(behavior_module + ".cfg", behavior_cfg)
             archive.writestr("behavior_traceability.json", json.dumps(behavior_mapping, indent=2))
-        archive.writestr("README.txt", "FormiPy project export\n\nRun: python -m pip install pytest; python -m pytest -q\nGenerated pytest checks exercise the Python prototype, not TLA+ equivalence.\n\nAnalysis is structural only. This export does not run TLC. Behavior files can be checked with TLC.\nRead analysis.json for warnings and scope.\nGraph modules ignore guard labels and concurrency.\nPython is a prototype, not proved equivalent to TLA+.\nOther diagram TLA+ outputs are draft skeletons.\n")
+        archive.writestr("README.txt", "FormiPy project export\n\nRun: python -m pip install pytest; python -m pytest -q\nGenerated smoke tests exercise the Python prototype. For supported flat state machines, an additional finite-semantics executable and exhaustive one-step oracle are included; see semantic_profile.json. These checks do not establish unrestricted UML equivalence.\n\nAnalysis is structural only. This export does not run TLC. Behavior files can be checked with TLC.\nRead analysis.json for warnings and scope.\nGraph modules ignore guard labels and concurrency.\nPython is a prototype, not proved equivalent to TLA+.\nOther diagram TLA+ outputs are draft skeletons.\n")
     return Response(buffer.getvalue(), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{stem}_project.zip"'})
 
 

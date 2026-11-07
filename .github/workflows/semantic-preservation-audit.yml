@@ -1,0 +1,47 @@
+name: FormiPy bounded semantic preservation audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [formal-semantic-preservation-bounded-state-machine]
+    paths:
+      - backend/semantic_export.py
+      - backend/main.py
+      - backend/tests/test_semantic_export.py
+      - scripts/run_bounded_semantic_preservation_2026.py
+      - .github/workflows/semantic-preservation-audit.yml
+jobs:
+  semantic-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - run: python backend/install_tlc.py
+      - name: Execute bounded semantic preservation regression and mutation tests
+        env:
+          PYTHONPATH: backend
+        run: python -m unittest backend.tests.test_semantic_export -v
+      - name: Run all regression tests
+        env:
+          PYTHONPATH: backend
+        run: python -m unittest discover -s backend/tests -v
+      - name: Check finite semantics against actual TLC outcomes and injected mutation
+        env:
+          PYTHONPATH: backend
+          FORMIPY_SEMANTICS_EVIDENCE: results/bounded_semantic_preservation
+        run: python scripts/run_bounded_semantic_preservation_2026.py
+      - name: Archive explicit TLC and semantic comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-Bounded-Semantic-Preservation
+          path: results/bounded_semantic_preservation/
+          if-no-files-found: warn
+          retention-days: 90

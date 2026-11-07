@@ -180,3 +180,9 @@ pytest failure describe different evidence, and should be reported separately.
 The existing full-stack FastAPI/React deployment is retained: GitHub Pages
 can host static frontend files but cannot execute the Python backend or TLC.
 CI checks all five diagram types' exported test suites.
+
+## Property-aware Python export checks (supported subset)
+
+For **use-case diagrams**, the exported `tests/test_generated.py` includes a test for each explicitly specified `forbidden_requests` actor/use-case pair. It verifies that the generated Python prototype's `allowed` relation does not grant the forbidden pair. A model that contains a forbidden association intentionally produces a **failing pytest assertion**. This is useful test evidence, not an export error.
+
+The generated state-machine Python prototype does **not** implement the full TLA+ guard/update/temporal semantics. Its exported tests remain smoke/contract checks and must **not** be described as property-equivalent to TLC. For formal state-machine properties, use `/api/verify` and preserve TLC output. The use-case forbidden-permission test is a narrow relational check, not general temporal verification.

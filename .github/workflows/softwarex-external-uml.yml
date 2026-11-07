@@ -17,3 +17,26 @@ jobs:
           python-version: '3.12'
       - name: Inspect external model source and structure
         run: python scripts/inventory_external_goldenuml.py
+
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - name: Execute independently sourced UML model compatibility study
+        env:
+          PYTHONPATH: backend
+          FORMIPY_EXTERNAL_RESULTS: results/softwarex_external_goldenuml
+        run: python scripts/run_external_goldenuml_2026.py
+      - name: Archive raw per-case outcomes and adaptation loss audits
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-External-GoldenUML-45
+          path: results/softwarex_external_goldenuml/
+          if-no-files-found: warn
+          retention-days: 90

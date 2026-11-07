@@ -1,0 +1,42 @@
+name: SoftwareX Phase 5 exported permission-contract study
+on:
+  workflow_dispatch:
+  push:
+    branches: [formipy-export-permission-contract-tests]
+    paths:
+      - backend/pytest_export.py
+      - backend/tests/test_permission_contract_export.py
+      - scripts/run_softwarex_phase5_2026.py
+      - .github/workflows/softwarex-phase5-2026.yml
+jobs:
+  permission-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - run: python backend/install_tlc.py
+      - name: Verify new export regression
+        env:
+          PYTHONPATH: backend
+        run: python -m unittest backend.tests.test_permission_contract_export -v
+      - name: Compare TLC and built-in permission tests
+        env:
+          PYTHONPATH: backend
+          FORMIPY_PHASE5_RESULTS: results/softwarex_phase5
+        run: python scripts/run_softwarex_phase5_2026.py
+      - name: Archive all model and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-SoftwareX-Phase5
+          path: results/softwarex_phase5/
+          if-no-files-found: warn
+          retention-days: 90

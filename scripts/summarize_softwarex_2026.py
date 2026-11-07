@@ -144,9 +144,9 @@ summary = {
     },
     "study_design": {
         "phase1": "balanced 250 synthetic structural models and 250 exported smoke suites, 100 malformed models",
-        "phase2": "four canonical TLC reference/fault controls, default generated smoke tests",
+        "phase2": "four canonical TLC reference/fault controls, current exported Python tests",
         "phase3": "20 reference and 20 mutant template repetitions, purpose-built property-aligned tests",
-        "phase4": "12 distinct hand-designed synthetic structures, reference and mutant each, default generated smoke tests",
+        "phase4": "12 distinct hand-designed synthetic structures, reference and mutant each, current exported Python tests",
         "phase5": "six Phase-4 use-case structures retested after built-in forbidden-permission contract addition",
     },
     "validity_limits": [
@@ -154,7 +154,7 @@ summary = {
         "Phase 3 repeats two templates, so observations are not independent benchmarks.",
         "Phase 5 reuses Phase 4 permission models; do not combine counts as unique models.",
         "Phase 3 custom test oracles are different from the default generated pytest tests.",
-        "Phase 4 and 5 evaluate different versions of FormiPy's generated tests; one code revision does not imply general semantic equivalence.",
+        "All phases are rerun here on the same current revision; earlier historical Phase 4 used an older pytest generator.",
         "TLC checks bounded model semantics; Python checks the generated prototype.",
         "The reported bootstrap confidence intervals describe repeated runtime sampling on this CI runner.",
         "No independent industrial case-study validation is included.",
@@ -195,7 +195,7 @@ for label, (num, tlc, py) in all_pairs.items():
     lines.append(f'| {label.replace("phase", "Phase ")} | {num} | {tlc} | {py} | {q["tlc_violation_pytest_pass"]} | {q["tlc_violation_pytest_failure"]} |')
 lines += [
     "",
-    "The Phase 2 and Phase 4 default smoke suites missed the selected formal property violations. Phase 3 employed separately written, property-aligned tests. Phase 5 added a narrow forbidden-permission assertion to the built-in export and then retested six structures reused from Phase 4.",
+    "These studies are all rerun on the same updated FormiPy commit. Current exported tests now include use-case forbidden-permission checks, so results may differ from the historical original Phase 2 and Phase 4 runs. Phase 3 uses purpose-built aligned tests. Phase 5 reuses six Phase 4 permission structures.",
     "",
     "## Reproducibility and limitations",
     "",
@@ -205,7 +205,7 @@ lines += [
     "",
     "Bootstrap intervals quantify variability across repeated in-process conversion calls on a single runner. They do not measure browser, Render network, or TLC model-checking latency.",
     "",
-    "Phase 4 and Phase 5 are paired on the same six permission structures; the before/after comparison is descriptive and based on known injected faults. The data do not establish an unbiased population-level improvement.",
+    "Phase 4 and Phase 5 contain the same six permission structures in this same-commit re-execution; they are NOT a before/after comparison. Historical before/after claims require the original run logs on different commits. The data do not establish an unbiased population-level improvement.",
     "",
     "## Manuscript wording",
     "",

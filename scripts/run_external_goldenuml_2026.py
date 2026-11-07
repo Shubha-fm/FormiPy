@@ -84,7 +84,7 @@ def parse_model(raw, name):
     skipped = []
     operators = r'(?:<\|--|--\|>|<\|[.]|[.]\|>|o--|--o|\*--|--\*|--|[.][.]|[-]|[.])'
     endpoint = r'(?:"[^"]+"|[A-Za-z_][\w.]*)'
-    mul = r'(?:\s+"[^"]*")?'
+    mul = r'(?:\s*"[^"]*")?'
     relation = re.compile(r'^\s*('+endpoint+r')'+mul+r'\s*('+operators+r')\s*'+mul+r'\s*('+endpoint+r')(?:\s*:\s*.*)?$', re.I)
     for line in lines:
         if not line or line.startswith(("'", "@", "!", "#", "hide ", "skinparam ", "package ", "namespace ", "title ", "note ")):

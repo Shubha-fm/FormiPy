@@ -1,0 +1,33 @@
+name: SoftwareX phase 1 current-version experiment
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [softwarex-experiment-phase1-2026]
+    paths:
+      - scripts/run_softwarex_phase1_2026.py
+      - .github/workflows/softwarex-phase1-2026.yml
+
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - name: Execute 250-model study
+        env:
+          PYTHONPATH: backend
+          FORMIPY_RESULTS: results/softwarex_phase1
+        run: python scripts/run_softwarex_phase1_2026.py
+      - name: Archive measurements even if checks fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-SoftwareX-Phase1
+          path: results/softwarex_phase1/
+          if-no-files-found: warn
+          retention-days: 90

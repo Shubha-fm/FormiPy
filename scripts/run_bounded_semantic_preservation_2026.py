@@ -9,6 +9,7 @@ checks, not a proof of general UML preservation.
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -65,7 +66,9 @@ for label, expected_tlc in (("tlc_safe","PASSED"),("tlc_unsafe","VIOLATED")):
         replacement = "'target': " + repr(alternative_target)
         if fragment not in code:
             raise AssertionError(f"{label}: expected transition target is absent")
-        destination.write_text(code.replace(fragment,replacement,1))
+        destination.write_text(code.replace(fragment,replacement,1) + '\n# injected_mutation_to_invalidate_bytecode_cache\n')
+        for cache in project.rglob('__pycache__'):
+            shutil.rmtree(cache)
         q = subprocess.run(command,cwd=project,capture_output=True,text=True,timeout=45)
         (folder/"mutated_oracle_pytest.log").write_text(q.stdout+"\n"+q.stderr)
         mutant_detected = q.returncode != 0

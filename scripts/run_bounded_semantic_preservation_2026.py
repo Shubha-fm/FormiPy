@@ -59,9 +59,13 @@ for label, expected_tlc in (("tlc_safe","PASSED"),("tlc_unsafe","VIOLATED")):
         filename = model["name"] + "_finite_semantics.py"
         destination = project/filename
         code = destination.read_text()
-        if "'target': 'stop'" not in code:
+        original_target = model["transitions"][0]["target"]
+        alternative_target = "idle" if original_target != "idle" else "stop"
+        fragment = "'target': " + repr(original_target)
+        replacement = "'target': " + repr(alternative_target)
+        if fragment not in code:
             raise AssertionError(f"{label}: expected transition target is absent")
-        destination.write_text(code.replace("'target': 'stop'","'target': 'idle'",1))
+        destination.write_text(code.replace(fragment,replacement,1))
         q = subprocess.run(command,cwd=project,capture_output=True,text=True,timeout=45)
         (folder/"mutated_oracle_pytest.log").write_text(q.stdout+"\n"+q.stderr)
         mutant_detected = q.returncode != 0

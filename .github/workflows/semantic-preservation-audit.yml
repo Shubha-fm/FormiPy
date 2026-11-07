@@ -7,6 +7,7 @@ on:
       - backend/semantic_export.py
       - backend/main.py
       - backend/tests/test_semantic_export.py
+      - scripts/run_bounded_semantic_preservation_2026.py
       - .github/workflows/semantic-preservation-audit.yml
 jobs:
   semantic-audit:

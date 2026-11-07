@@ -100,7 +100,7 @@ def test_allowed_request_then_completion():
                          for p in model.forbidden_requests
                          if p.source in actors and p.target in cases]
             if forbidden:
-                body += f'''\n\ndef test_forbidden_permissions_are_not_granted():\n    instance = GeneratedModel()\n    forbidden = {forbidden!r}\n    for pair in forbidden:\n        assert pair not in instance.allowed, f"Forbidden permission granted: {pair!r}"\n'''
+                body += f'''\n\ndef test_forbidden_permissions_are_not_granted():\n    instance = GeneratedModel()\n    forbidden = {forbidden!r}\n    for pair in forbidden:\n        assert pair not in instance.allowed, f"Forbidden permission granted: {{pair!r}}"\n'''
         return header + body
 
     if kind == "class":

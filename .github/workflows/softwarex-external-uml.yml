@@ -1,0 +1,19 @@
+name: SoftwareX external GoldenUML inventory
+on:
+  workflow_dispatch:
+  push:
+    branches: [softwarex-external-goldenuml-benchmark]
+    paths:
+      - scripts/inventory_external_goldenuml.py
+      - .github/workflows/softwarex-external-uml.yml
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect external model source and structure
+        run: python scripts/inventory_external_goldenuml.py

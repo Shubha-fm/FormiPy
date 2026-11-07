@@ -40,3 +40,26 @@ jobs:
           path: results/softwarex_external_goldenuml/
           if-no-files-found: warn
           retention-days: 90
+
+  engineering-demonstrator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - name: Evaluate pinned external MoDeS3 Section and Turnout statecharts
+        env:
+          PYTHONPATH: backend
+          FORMIPY_RAIL_RESULTS: results/softwarex_external_modes3
+        run: python scripts/run_external_modes3_2026.py
+      - name: Archive provenance and skipped-statechart audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-External-MoDeS3-Engineering
+          path: results/softwarex_external_modes3/
+          if-no-files-found: warn
+          retention-days: 90

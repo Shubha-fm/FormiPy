@@ -1,4 +1,4 @@
-# Deploy UML2TLA+ with TLC
+# Deploy FormiPy with TLC
 
 Use the included Dockerfile to run the frontend, FastAPI, Java 17 and pinned TLC in one service.
 
@@ -11,8 +11,8 @@ The image installs TLC at build time with checksum validation. It listens on Ren
 ## Local Docker
 
 ```bash
-docker build -t uml2tla .
-docker run --rm -p 8000:8000 uml2tla
+docker build -t formipy .
+docker run --rm -p 8000:8000 formipy
 ```
 
 Open http://localhost:8000.

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Software title | FormiPy / UML2TLA+ Five Diagram Converter (confirm final publication name) |
+| Software title | FormiPy: UML to TLA+ and Python |
 | Source repository | https://github.com/Shubha-fm/uml2tla-app |
 | Live application | https://uml2tla-app.onrender.com/ |
 | Backend | Python, FastAPI |

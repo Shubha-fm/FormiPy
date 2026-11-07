@@ -32,3 +32,30 @@ PYTHONPATH=backend python scripts/run_external_goldenuml_2026.py
 ```
 
 This is a repeatable external-input compatibility study, not a semantic-preservation benchmark. Always report how many of the 45 cases have class models, relationship loss, successful exports and passing pytest smoke suites. Do not use the success proportion as an estimate of industrial applicability.
+
+## Verified external benchmark results (8 November 2026)
+
+Evidence: [GitHub Actions run 42412055688](https://github.com/Shubha-fm/FormiPy/actions/runs/42412055688) on source commit `c2b7c41df32383ed44b0a82acd5ff86609328feb`.
+
+| Measure | Observed |
+|---|---:|
+| Independently curated source diagrams | 45 |
+| Input diagrams with recognized classes | 45 |
+| Class declarations mapped into FormiPy JSON | 458/458 |
+| Candidate association/relationship lines | 475 |
+| Binary relationship lines mapped | 373/475 (78.5%) |
+| Unsupported or unresolved relationship lines | 102/475 (21.5%) |
+| Structural HTTP conversion successes | 45/45 |
+| Exported Python pytest suite passes | 45/45 |
+| Full UML semantic fidelity established | No |
+| Class-diagram TLC verification performed | No |
+| Independently sourced industrial deployed systems | 0 |
+
+The results are from a **conservative, purpose-built PlantUML adapter**. A conversion success only means that FormiPy accepted the adapted class/relationship subset and generated executable Python code that passed the exported smoke tests. It does not mean that the original UML diagram was fully transformed, and the percentage of relationship lines mapped is a syntactic coverage measurement, **not** a semantic correctness measurement. The aggregate class declarations and candidate relationships are parsing observations and have not been independently audited against source diagrams.
+
+The downloaded public Zenodo ZIP had SHA256:
+`9e4f30bad172f06ecb510dc2b0b405a7d38ea4cbf4336cdca562638e7dbec3c9`.
+
+### Suggested SoftwareX manuscript paragraph
+
+We conducted an additional evaluation using the independently curated Golden UML ModelSet (Verbruggen et al., 2025; DOI: 10.5281/zenodo.16985873). The 45 externally sourced class-diagram models were adapted into FormiPy's input schema using a conservative parser for named classes and binary relationships. The adapter mapped 458 recognized class declarations and 373 of 475 candidate relationship lines (78.5%). All 45 adapted models completed structural conversion, and their exported Python smoke-test suites passed. The remaining 102 relationship candidates were unsupported or unresolved, and multiplicities, n-ary associations, and richer UML semantics were not preserved. These observations demonstrate compatibility with adapted external inputs rather than full UML fidelity, formal verification of class diagrams, or validation in deployed industrial systems.

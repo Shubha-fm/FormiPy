@@ -1,0 +1,46 @@
+name: Build Zenodo FormiPy development snapshot
+on:
+  workflow_dispatch:
+  push:
+    branches: [prepare-zenodo-snapshot-2026-11-10]
+    paths:
+      - scripts/build_zenodo_snapshot_2026.py
+      - .github/workflows/build-zenodo-snapshot-2026.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout packaging script
+        uses: actions/checkout@v4
+      - name: Checkout exact published development commit
+        uses: actions/checkout@v4
+        with:
+          ref: e1924eb98d90f5dc110d666f2189091bed0de8b7
+          path: snapshot
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve archived independently identified experiment evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/same_commit_phases_1_to_5 evidence/external_goldenuml evidence/external_modes3 evidence/bounded_semantics
+          gh run download 42410768543 --repo "$GITHUB_REPOSITORY" --name FormiPy-SoftwareX-2026-SameCommit-CompleteEvidence --dir evidence/same_commit_phases_1_to_5
+          gh run download 42412269801 --repo "$GITHUB_REPOSITORY" --name FormiPy-External-GoldenUML-45 --dir evidence/external_goldenuml
+          gh run download 42412269801 --repo "$GITHUB_REPOSITORY" --name FormiPy-External-MoDeS3-Engineering --dir evidence/external_modes3
+          gh run download 42412983262 --repo "$GITHUB_REPOSITORY" --name FormiPy-Bounded-Semantic-Preservation --dir evidence/bounded_semantics
+      - name: Create and validate Zenodo draft archive
+        run: python scripts/build_zenodo_snapshot_2026.py
+      - name: Upload exact Zenodo-ready ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormiPy-Zenodo-Development-Snapshot-2026-11-10
+          path: dist/FormiPy_Zenodo_Development_Snapshot_2026-11-10.zip
+          if-no-files-found: error
+          retention-days: 90
